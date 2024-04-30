@@ -18,6 +18,7 @@ public class TownyHook extends BaseDependency implements ForceToggleDependency {
 		townyAPI = TownyAPI.getInstance();
 	}
 
+	@SuppressWarnings("null") // already check if resident has town
 	@Override
 	public boolean shouldDisable(final Player player) {
 		final Resident resident = townyAPI.getResident(player);
