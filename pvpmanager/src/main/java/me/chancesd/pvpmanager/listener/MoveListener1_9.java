@@ -16,9 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import me.NoChance.PvPManager.PvPlayer;
 import me.chancesd.pvpmanager.manager.DependencyManager;
-import me.chancesd.pvpmanager.manager.PlayerHandler;
+import me.chancesd.pvpmanager.manager.PlayerManager;
+import me.chancesd.pvpmanager.player.CombatPlayer;
 import me.chancesd.pvpmanager.setting.Messages;
 import me.chancesd.pvpmanager.tasks.RegionCheckTask;
 import me.chancesd.pvpmanager.utils.CombatUtils;
@@ -26,11 +26,11 @@ import me.chancesd.pvpmanager.utils.ScheduleUtils;
 
 public class MoveListener1_9 implements Listener {
 
-	private final PlayerHandler ph;
+	private final PlayerManager ph;
 	private final Cache<UUID, Player> cache = CacheBuilder.newBuilder().weakValues().expireAfterWrite(1, TimeUnit.SECONDS).build();
 	private final DependencyManager dependencyManager;
 
-	public MoveListener1_9(final PlayerHandler ph) {
+	public MoveListener1_9(final PlayerManager ph) {
 		this.ph = ph;
 		this.dependencyManager = ph.getPlugin().getDependencyManager();
 		final RegionCheckTask regionCheckTask = new RegionCheckTask(ph, dependencyManager);
@@ -46,7 +46,7 @@ public class MoveListener1_9 implements Listener {
 			return;
 
 		final Player player = event.getPlayer();
-		final PvPlayer pvplayer = ph.get(player);
+		final CombatPlayer pvplayer = ph.get(player);
 		if (!pvplayer.isInCombat())
 			return;
 

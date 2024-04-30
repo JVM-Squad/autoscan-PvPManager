@@ -1,19 +1,19 @@
 package me.chancesd.pvpmanager.tasks;
 
-import me.NoChance.PvPManager.PvPlayer;
-import me.chancesd.pvpmanager.manager.PlayerHandler;
+import me.chancesd.pvpmanager.manager.PlayerManager;
+import me.chancesd.pvpmanager.player.CombatPlayer;
 
 public class PvPToggleFeeTask implements Runnable {
 
-	private final PlayerHandler ph;
+	private final PlayerManager ph;
 
-	public PvPToggleFeeTask(final PlayerHandler ph) {
+	public PvPToggleFeeTask(final PlayerManager ph) {
 		this.ph = ph;
 	}
 
 	@Override
 	public final void run() {
-		for (final PvPlayer p : ph.getPlayers().values()) {
+		for (final CombatPlayer p : ph.getPlayers().values()) {
 			if (!p.hasPvPEnabled()) {
 				p.applyPvPDisabledFee();
 			}
