@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import java.util.ArrayList;
+import static org.mockito.Mockito.when;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -19,11 +19,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import me.chancesd.pvpmanager.InstanceCreator;
 import me.chancesd.pvpmanager.PluginTest;
 import me.chancesd.pvpmanager.PvPManager;
-import me.chancesd.pvpmanager.listener.PlayerListener;
 import me.chancesd.pvpmanager.manager.PlayerManager;
 import me.chancesd.pvpmanager.player.CombatPlayer;
 import me.chancesd.pvpmanager.setting.Messages;
@@ -102,12 +100,18 @@ public class PlayerListenerTest {
 		assertTrue(pvPlayer.isInCombat());
 	}
 
+	private PlayerDeathEvent createDeathEvent(final Player player) {
+		final PlayerDeathEvent event = mock(PlayerDeathEvent.class);
+		when(event.getEntity()).thenReturn(player);
+		return event;
+	}
+
 	@Test
 	final void regularDeath() {
 		final Player player = pt.createPlayer("regularDeath");
 		final CombatPlayer pDefender = ph.get(player);
 		assertFalse(pDefender.isInCombat());
-		listener.onPlayerDeath(new PlayerDeathEvent(player, new ArrayList<>(), 0, ""));
+		listener.onPlayerDeath(createDeathEvent(player));
 	}
 
 	@Test
@@ -118,13 +122,13 @@ public class PlayerListenerTest {
 		final CombatPlayer pDefender = ph.get(defender);
 
 		tagPlayer(pDefender);
-		listener.onPlayerDeath(new PlayerDeathEvent(defender, new ArrayList<>(), 0, ""));
+		listener.onPlayerDeath(createDeathEvent(defender));
 		assertFalse(pDefender.isInCombat());
 
 		Settings.setUntagEnemy(true);
 		tagPlayer(pDefender, pAttacker);
 		tagPlayer(pAttacker, pDefender);
-		listener.onPlayerDeath(new PlayerDeathEvent(defender, new ArrayList<>(), 0, ""));
+		listener.onPlayerDeath(createDeathEvent(defender));
 		assertFalse(pDefender.isInCombat());
 		assertFalse(pAttacker.isInCombat());
 	}
@@ -142,7 +146,7 @@ public class PlayerListenerTest {
 		tagPlayer(pvPlayer);
 		listener.onCommand(commandPreprocessEvent);
 		assertTrue(commandPreprocessEvent.isCancelled());
-		verify(player, atMostOnce()).sendMessage(Messages.getCommandDeniedIncombat());
+		verify(player, atMostOnce()).sendMessage(Messages.commandDeniedIncombat.getMsg());
 
 		final PlayerCommandPreprocessEvent commandPreprocessEvent2 = new PlayerCommandPreprocessEvent(player, "/tell");
 		tagPlayer(pvPlayer);
